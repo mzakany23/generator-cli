@@ -69,21 +69,43 @@ class Django(object):
 	
 	def create_project(self):
 		run('django-admin.py startproject %s' % self.name)
+		mkdir("%s/settings" % self.app_paths['settings'])
 
-	def make_settings_file(self):
-		sfile = make_ctx_file(
+	def make_file(self,fdir,fname,fto_path,ctx=None):
+		'''
+			directory where file comes from
+			files name
+			where file gets printed
+			context if any
+		'''
+		sfile = fcombine(fdir,fname,ctx)
+		create_file(fto_path,sfile)
+
+	def make_settings_dir():
+		self.make_file(
 			self.settings_dir['settings'],
-			'settings.py',
-			self.ctx['settings']
+			'common.py',
+			"%s/%s" % (self.app_paths['settings'],'settings/common.py')
 		)
-		
-		settings = "%s/settings.py" % self.app_paths['settings']
 
-		create_file(settings,sfile)
+		self.make_file(
+			self.settings_dir['settings'],
+			'local.py',
+			"%s/%s" % (self.app_paths['settings'],'settings/local.py')
+		)
+
+		self.make_file(
+			self.settings_dir['settings'],
+			'production.py',
+			"%s/%s" % (self.app_paths['settings'],'settings/production.py')
+		)
 
 	def install_requirements(self,key):
 		with virtualenv('%s/bin' % self.name):
 			run_install(self.reqire_dir[key])	
+
+	def start_server(self):
+		run('python manage.py runserver')
 
 class DjangoMonolith(Django):
 	def __init__(self,name,path,type):
@@ -95,13 +117,16 @@ class DjangoMonolith(Django):
 		self.install_requirements('development-test')
 
 		cd(self.name)
+		self.create_project()
 		self.make_static_dirs()
 		self.make_static_files()
-		self.create_project()
-		self.make_settings_file()
+		self.make_settings_dir()
+
 
 		cd(self.app_paths['manage.py'])
 		self.setup_migrations()
+
+		self.start_server()
 
 		
 

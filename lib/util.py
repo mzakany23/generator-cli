@@ -78,14 +78,13 @@ def run_install(wf):
 def mkdir(directory):
 	os.makedirs(directory) if not os.path.exists(directory) else error('%s exists' % directory,type=Exception)
 
-def make_ctx_file(path,fname,ctx):
+def fcombine(path,fname,ctx=None):
 	'''
 		path to directory
 		filename in that directory
 		context to put in file 
 	'''
-
-	template = t_gen(path)	
+	template = t_gen(path)
 	return template(fname,ctx)
 	
 def create_file(fpath,sfile):
