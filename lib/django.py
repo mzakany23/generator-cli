@@ -81,7 +81,7 @@ class Django(object):
 		sfile = fcombine(fdir,fname,ctx)
 		create_file(fto_path,sfile)
 
-	def make_settings_dir():
+	def make_settings_dir(self):
 		self.make_file(
 			self.settings_dir['settings'],
 			'common.py',
@@ -112,6 +112,7 @@ class DjangoMonolith(Django):
 		Django.__init__(self,name,path,type)
 
 	def setup(self):
+
 		cd(self.path)	
 		self.make_virtual_env()
 		self.install_requirements('development-test')
@@ -121,7 +122,6 @@ class DjangoMonolith(Django):
 		self.make_static_dirs()
 		self.make_static_files()
 		self.make_settings_dir()
-
 
 		cd(self.app_paths['manage.py'])
 		self.setup_migrations()
