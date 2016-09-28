@@ -18,7 +18,7 @@ class Django(object):
 		}
 
 		self.settings_dir = {
-			'development' : "%s/templates/django/settings" % get_rd()
+			'settings' : "%s/templates/django/settings" % get_rd()
 		}
 
 		self.ctx = {
@@ -47,37 +47,32 @@ class Django(object):
 
 	def make_static_files(self):
 		touch('.gitignore')
-		touch('templates/home/index.html')
-		touch('templates/api/__init__.py')
+		touch('static/templates/home/index.html')
+		touch('%s/api/__init__.py' % self.name)
 
 	def make_static_dirs(self):
-		mkdir('templates/layouts/partials')
-		
-	def make_dir_structure(self):
+		mkdir('docs')
+		mkdir('logs')
+		mkdir('tests')
 		mkdir('static/static/assets/')
 		mkdir('static/static/assets/js')
 		mkdir('static/static/assets/css')
 		mkdir('static/static/assets/img')
 		mkdir('static/media')
 		mkdir('static/root')
-
+		mkdir('static/templates/layouts/partials')
+		
 	def setup_migrations(self):
 		run('python manage.py createmigrations')
 		run('python manage.py migrate')	
 
-	def create_settings_file(self,path,ctx):
-		# ctx = {'modules' : ['home','away','works']}
-		template = t_gen(self.settings_dir['development'])	
-		sfile = template('settings.py',ctx)
-		
+	
 	def create_project(self):
 		run('django-admin.py startproject %s' % self.name)
 
 	def make_settings_file(self):
-		print self.settings_dir['development']
-
 		sfile = make_ctx_file(
-			self.settings_dir['development'],
+			self.settings_dir['settings'],
 			'settings.py',
 			self.ctx['settings']
 		)
@@ -100,7 +95,6 @@ class DjangoMonolith(Django):
 		self.install_requirements('development-test')
 
 		cd(self.name)
-		self.make_dir_structure()
 		self.make_static_dirs()
 		self.make_static_files()
 		self.create_project()

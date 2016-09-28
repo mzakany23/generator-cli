@@ -76,7 +76,7 @@ def run_install(wf):
 	map(fn,fc)
 
 def mkdir(directory):
-	os.makedirs(directory) if not os.path.exists(directory) else error('path doesnt exist',type=OSError)
+	os.makedirs(directory) if not os.path.exists(directory) else error('%s exists' % directory,type=Exception)
 
 def make_ctx_file(path,fname,ctx):
 	'''
