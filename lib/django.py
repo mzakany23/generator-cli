@@ -7,42 +7,39 @@ class Django(object):
 		self.path = path 
 		self.type = type
 		
-		# files
-		self.settings_file = '../templates/django/settings/settings.py'
-		self.new_settings_file = "%s/%s/%s/%s/settings.py" % (path,name,name,name)
-
-		# cli directory lookup
-		self.templates_dir = {
-			'home' : "%s/templates/django/templates/home/index.html" % get_rd(),
-			'base' : "%s/templates/django/templates/layouts/base.html" % get_rd()
-		}
-		self.reqire_dir = {
-			'development' : "%s/templates/django/requirements/development.txt" % get_rd(),
-			'development-test' : "%s/templates/django/requirements/development-test.txt" % get_rd()
-		}
-
-		self.settings_dir = {
-			'settings_dir' : "%s/templates/django/settings" % get_rd(),
-			'settings' : "%s/templates/django/settings/settings.py" % get_rd(),
-			'env' : "%s/templates/django/settings/env.py" % get_rd()
-		}
-
-		self.urls_dir = {
-			'urls' : "%s/templates/django/urls" % get_rd()
-		}
-
-		self.views_dir = {
-			'home' : "%s/templates/django/views/home/views.py" % get_rd()
-		}
-
-		self.ctx = {
+		# generator cli path lookups
+		self.gpath_lookup = {
 			'settings' : {
-				'modules' : ['home']
+				'settings_dir' : "%s/templates/django/settings" % get_rd(),
+				'settings.py' : "%s/templates/django/settings/settings.py" % get_rd(),
+				'env.py' : "%s/templates/django/settings/env.py" % get_rd()
+			},
+			'urls' : {
+				'urls_dir' : "%s/templates/django/urls" % get_rd(),
+				'urls.py' : "%s/templates/django/urls/urls.py" % get_rd(),
+			},
+			'templates' : {
+				'home' : {
+					'index.html' : "%s/templates/django/templates/home/index.html" % get_rd(),
+				},
+				'layouts' : {
+					'base.html' : "%s/templates/django/templates/layouts/base.html" % get_rd()
+				}
+			},
+			'views' : {
+				'home' : {
+					'views.py' : "%s/templates/django/views/home/views.py" % get_rd()
+				}
+			},
+			'requirements' : {
+				'development.txt' : "%s/templates/django/requirements/development.txt" % get_rd(),
+				'development-test.txt' :  "%s/templates/django/requirements/development-test.txt" % get_rd()
 			}
 		}
 
+
 		# django app directory lookup
-		self.app_paths = {
+		self.dpath_lookup = {
 			'app' : "%s/%s" % (path,name),
 			'venv' : path,
 			'settings' : "%s/%s/%s/" % (path,name,name),
@@ -50,6 +47,33 @@ class Django(object):
 			'root' : "%s/%s/" % (path,name),
 			'manage.py' : "%s/%s/%s" % (path,name,name),
 		}
+
+		self.dapp_lookup = {
+			'settings' : {
+				'production.py' : "%s%s" % (self.dpath_lookup['settings'],'settings/production.py'),
+				'local.py' : "%s%s" % (self.dpath_lookup['settings'],'settings/local.py'),
+				'common.py' : "%s%s" % (self.dpath_lookup['settings'],'settings/common.py'),
+				'settings.py' : "%s%s" % (self.dpath_lookup['settings'],'%s/settings.py' % self.name),
+				'env.py' : "%s%s" % (self.dpath_lookup['settings'],'%s/env.py' % self.name)
+			},
+			'urls' : {
+				'urls.py' : "%s%s" % (self.dpath_lookup['urls'],'%s/urls.py' % self.name)
+			},
+			'templates' : {
+				'home' : {
+					'index.html' : "%s/%s" % (self.dpath_lookup['app'],"static/templates/home/index.html")
+				},
+				'layouts' : {
+					'base.html' : "%s/%s" % (self.dpath_lookup['app'],"static/templates/layouts/base.html")
+				}
+			},
+			'views' : {
+				'home' : {
+					'views.py' : "%s%s" % (self.dpath_lookup['root'],"%s/home/views.py" % self.name)
+				}
+			}
+		}
+
 
 	
 	def make_virtual_env(self):
@@ -98,74 +122,79 @@ class Django(object):
 
 	def make_url_file(self):
 		self.make_file(
-			self.urls_dir['urls'],
+			self.gpath_lookup['urls']['urls_dir'],
 			'urls.py',
-			"%s%s" % (self.app_paths['urls'],'%s/urls.py' % self.name)
+			self.dapp_lookup['urls']['urls.py']
 		)
 
 	def make_settings_dir(self):
 		self.make_file(
-			self.settings_dir['settings'],
+			self.gpath_lookup['settings']['settings_dir'],
 			'common.py',
-			"%s%s" % (self.app_paths['settings'],'settings/common.py')
+			self.dapp_lookup['settings']['common.py']
 		)
 
 		self.make_file(
-			self.settings_dir['settings'],
+			self.gpath_lookup['settings']['settings_dir'],
 			'local.py',
-			"%s%s" % (self.app_paths['settings'],'settings/local.py')
+			self.dapp_lookup['settings']['local.py']
 		)
 
 		self.make_file(
-			self.settings_dir['settings'],
+			self.gpath_lookup['settings']['settings_dir'],
 			'production.py',
-			"%s%s" % (self.app_paths['settings'],'settings/production.py')
+			self.dapp_lookup['settings']['production.py']
 		)
 
 	def install_requirements(self,key):
 		with virtualenv('%s/bin' % self.name):
-			run_install(self.reqire_dir[key])	
+			run_install(self.gpath_lookup['requirements'][key])	
 
 	def start_server(self):
 		run('python manage.py runserver')
 
 	def move_files_over(self):
 		cpm(
-			self.settings_dir['env'],
-			"%s%s" % (self.app_paths['settings'],'%s/env.py' % self.name)
+			self.gpath_lookup['urls']['urls.py'],
+			self.dapp_lookup['urls']['urls.py']
+		)
+
+		cpm(
+			self.gpath_lookup['settings']['env.py'],
+			self.dapp_lookup['settings']['env.py']
 		)
 
 		self.make_file(
-			self.settings_dir['settings_dir'],
+			self.gpath_lookup['settings']['settings_dir'],
 			'settings.py',
-			"%s%s" % (self.app_paths['settings'],'%s/settings.py' % self.name),
+			self.dapp_lookup['settings']['settings.py'],
 			{'sitename' : self.name}
 		)
 
 		cpm(
-			self.views_dir['home'],
-			"%s%s" % (self.app_paths['root'],"%s/home/views.py" % self.name)
+			self.gpath_lookup['views']['home']['views.py'],
+			self.dapp_lookup['views']['home']['views.py']
 		)
 
 		cpm(
-			self.templates_dir['base'],
-			"%s/%s" % (self.app_paths['app'],"static/templates/layouts/base.html")
+			self.gpath_lookup['templates']['layouts']['base.html'],
+			self.dapp_lookup['templates']['layouts']['base.html']
 		)
 
 		cpm(
-			self.templates_dir['home'],
-			"%s/%s" % (self.app_paths['app'],"static/templates/home/index.html")
+			self.gpath_lookup['templates']['home']['index.html'],
+			self.dapp_lookup['templates']['home']['index.html']
 		)	
 
 	def django_run_list(self,fn):
 		scrub_project_name(self.name)
 		cd(self.path)	
 		self.make_virtual_env()
-		self.install_requirements('development-test')	
+		self.install_requirements('development-test.txt')	
 		cd(self.name)
 		self.create_project()
 		fn()
-		cd(self.app_paths['manage.py'])
+		cd(self.dpath_lookup['manage.py'])
 		run('python manage.py makemigrations')
 		run('python manage.py migrate')	
 		run('python manage.py runserver')
