@@ -1,9 +1,9 @@
 generator-cli
 =========
 
-*A project generator like yeoman written in python*
+![generator cli](https://github.com/mzakany23/generator-cli/blob/master/demo.gif)
 
-![rotate grid](https://github.com/mzakany23/generator-cli/blob/master/demo.gif)
+*A project generator like yeoman written in python*
 
 Purpose
 -------
