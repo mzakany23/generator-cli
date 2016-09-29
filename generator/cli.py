@@ -12,7 +12,7 @@ Options:
 
 Examples:
   generator g project django
-  generator make:django-api products -d ~/Desktop
+  generator make:djangoapi products -d ~/Desktop
 
 Help:
   <project> types:

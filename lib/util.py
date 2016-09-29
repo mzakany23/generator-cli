@@ -38,11 +38,18 @@ def cd(path):
 def ls():
 	print [f for f in listdir('.')]
 
+def cpm(from_path,to_path):
+	copyfile(from_path,to_path)
+
+def scrub_project_name(name):
+	if '-' in name:
+		error('name must look like this: test_project; testProject; testproject ect.',type=Exception)
+
 def mv(op,np):
 	op = get_path(op)
 
 	if isfile(op) and isfile(np):
-		os.copyfile(op,np)
+		copyfile(op,np)
 
 def get_rd():
 	'''get the project base path i.e. /path/to/generator-cli'''
@@ -96,7 +103,7 @@ def touch(path):
 	if not os.path.exists(basedir) and basedir:
 	    mkdir(basedir)
 
-	with open(path, 'a'):
+	with open(path, 'w'):
 		os.utime(path, None)
 
 

@@ -1,4 +1,4 @@
-from lib.django import DjangoMonolith
+from lib.django import DjangoMonolith,DjangoApi
 
 class Generators(DjangoMonolith):
 	def __init__(self,type,name,path):
@@ -7,7 +7,8 @@ class Generators(DjangoMonolith):
 		self.name = name 
 		self.path = path
 		self.command_lookup = {
-			'django' : self.generate_django_monolith
+			'django' : self.generate_django_monolith,
+			'djangoapi' : self.generate_django_api
 		}
 	
 	
@@ -15,10 +16,9 @@ class Generators(DjangoMonolith):
 		d = DjangoMonolith(self.name,self.path,self.type)
 		d.setup()
 
-		pass
-
 	def generate_django_api(self):
-		pass
+		d = DjangoApi(self.name,self.path,self.type)
+		d.setup()
 
 	def generate_webpack_riot(self):
 		pass
