@@ -11,7 +11,6 @@ class Generators(DjangoMonolith):
 			'djangoapi' : self.generate_django_api
 		}
 	
-	
 	def generate_django_monolith(self):
 		d = DjangoMonolith(self.name,self.path,self.type)
 		d.setup()

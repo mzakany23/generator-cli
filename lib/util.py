@@ -4,7 +4,7 @@ from os.path import isfile,join,basename
 from subprocess import call,check_call,Popen
 from functools import wraps
 from shutil import copyfile
-from lib.templates import t_gen
+from lib import templates
 
 class virtualenv:
 	def __init__(self,bin_path):
@@ -91,7 +91,7 @@ def fcombine(path,fname,ctx=None):
 		filename in that directory
 		context to put in file 
 	'''
-	template = t_gen(path)
+	template = templates.t_gen(path)
 	return template(fname,ctx)
 	
 def create_file(fpath,sfile):

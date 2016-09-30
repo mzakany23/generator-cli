@@ -1,5 +1,4 @@
-from lib.util import *
-from lib.templates import t_gen
+from lib import util
 
 class Django(object):
 	def __init__(self,name,path,type):
@@ -10,30 +9,30 @@ class Django(object):
 		# generator cli path lookups
 		self.gpath_lookup = {
 			'settings' : {
-				'settings_dir' : "%s/templates/django/settings" % get_rd(),
-				'settings.py' : "%s/templates/django/settings/settings.py" % get_rd(),
-				'env.py' : "%s/templates/django/settings/env.py" % get_rd()
+				'settings_dir' : "%s/templates/django/settings" % util.get_rd(),
+				'settings.py' : "%s/templates/django/settings/settings.py" % util.get_rd(),
+				'env.py' : "%s/templates/django/settings/env.py" % util.get_rd()
 			},
 			'urls' : {
-				'urls_dir' : "%s/templates/django/urls" % get_rd(),
-				'urls.py' : "%s/templates/django/urls/urls.py" % get_rd(),
+				'urls_dir' : "%s/templates/django/urls" % util.get_rd(),
+				'urls.py' : "%s/templates/django/urls/urls.py" % util.get_rd(),
 			},
 			'templates' : {
 				'home' : {
-					'index.html' : "%s/templates/django/templates/home/index.html" % get_rd(),
+					'index.html' : "%s/templates/django/templates/home/index.html" % util.get_rd(),
 				},
 				'layouts' : {
-					'base.html' : "%s/templates/django/templates/layouts/base.html" % get_rd()
+					'base.html' : "%s/templates/django/templates/layouts/base.html" % util.get_rd()
 				}
 			},
 			'views' : {
 				'home' : {
-					'views.py' : "%s/templates/django/views/home/views.py" % get_rd()
+					'views.py' : "%s/templates/django/views/home/views.py" % util.get_rd()
 				}
 			},
 			'requirements' : {
-				'development.txt' : "%s/templates/django/requirements/development.txt" % get_rd(),
-				'development-test.txt' :  "%s/templates/django/requirements/development-test.txt" % get_rd()
+				'development.txt' : "%s/templates/django/requirements/development.txt" % util.get_rd(),
+				'development-test.txt' :  "%s/templates/django/requirements/development-test.txt" % util.get_rd()
 			}
 		}
 
@@ -77,38 +76,37 @@ class Django(object):
 
 	
 	def make_virtual_env(self):
-		run('virtualenv %s' % self.name)
+		util.run('virtualenv %s' % self.name)
 
 	def setup(self):
 		raise NotImplementedError('You must implement the setup() method yourself!')
 
 	def make_static_files(self):
-		touch('.gitignore')
-		# touch('%s/home/views.py' % self.name)
-		touch('%s/home/__init__.py' % self.name)
-		touch('%s/home/admin.py' % self.name)
-		touch('%s/api/__init__.py' % self.name)
+		util.touch('.gitignore')
+		util.touch('%s/home/__init__.py' % self.name)
+		util.touch('%s/home/admin.py' % self.name)
+		util.touch('%s/api/__init__.py' % self.name)
 
 	def make_static_dirs(self):
-		mkdir('docs')
-		mkdir('logs')
-		mkdir('tests')
-		mkdir('static/static/assets/')
-		mkdir('static/static/assets/js')
-		mkdir('static/static/assets/css')
-		mkdir('static/static/assets/img')
-		mkdir('static/media')
-		mkdir('static/root')
-		mkdir('static/templates/layouts/partials')
-		mkdir('static/templates/home')
+		util.mkdir('docs')
+		util.mkdir('logs')
+		util.mkdir('tests')
+		util.mkdir('static/static/assets/')
+		util.mkdir('static/static/assets/js')
+		util.mkdir('static/static/assets/css')
+		util.mkdir('static/static/assets/img')
+		util.mkdir('static/media')
+		util.mkdir('static/root')
+		util.mkdir('static/templates/layouts/partials')
+		util.mkdir('static/templates/home')
 		
 	def setup_migrations(self):
-		run('python manage.py makemigrations')
-		run('python manage.py migrate')	
+		util.run('python manage.py makemigrations')
+		util.run('python manage.py migrate')	
 
 	
 	def create_project(self):
-		run('django-admin.py startproject %s' % self.name)
+		util.run('django-admin.py startproject %s' % self.name)
 		
 	def make_file(self,fdir,fname,fto_path,ctx=None):
 		'''
@@ -117,8 +115,8 @@ class Django(object):
 			where file gets printed
 			context if any
 		'''
-		sfile = fcombine(fdir,fname,ctx)
-		create_file(fto_path,sfile)
+		sfile = util.fcombine(fdir,fname,ctx)
+		util.create_file(fto_path,sfile)
 
 	def make_url_file(self):
 		self.make_file(
@@ -146,20 +144,20 @@ class Django(object):
 			self.dapp_lookup['settings']['production.py']
 		)
 
-	def install_requirements(self,key):
-		with virtualenv('%s/bin' % self.name):
-			run_install(self.gpath_lookup['requirements'][key])	
+	def install_requirements(self,filename):
+		with util.virtualenv('%s/bin' % self.name):
+			util.run_install(self.gpath_lookup['requirements'][filename])	
 
 	def start_server(self):
-		run('python manage.py runserver')
+		util.run('python manage.py runserver')
 
 	def move_files_over(self):
-		cpm(
+		util.cpm(
 			self.gpath_lookup['urls']['urls.py'],
 			self.dapp_lookup['urls']['urls.py']
 		)
 
-		cpm(
+		util.cpm(
 			self.gpath_lookup['settings']['env.py'],
 			self.dapp_lookup['settings']['env.py']
 		)
@@ -171,33 +169,33 @@ class Django(object):
 			{'sitename' : self.name}
 		)
 
-		cpm(
+		util.cpm(
 			self.gpath_lookup['views']['home']['views.py'],
 			self.dapp_lookup['views']['home']['views.py']
 		)
 
-		cpm(
+		util.cpm(
 			self.gpath_lookup['templates']['layouts']['base.html'],
 			self.dapp_lookup['templates']['layouts']['base.html']
 		)
 
-		cpm(
+		util.cpm(
 			self.gpath_lookup['templates']['home']['index.html'],
 			self.dapp_lookup['templates']['home']['index.html']
 		)	
 
 	def django_run_list(self,fn):
-		scrub_project_name(self.name)
-		cd(self.path)	
+		util.scrub_project_name(self.name)
+		util.cd(self.path)	
 		self.make_virtual_env()
 		self.install_requirements('development-test.txt')	
-		cd(self.name)
+		util.cd(self.name)
 		self.create_project()
 		fn()
-		cd(self.dpath_lookup['manage.py'])
-		run('python manage.py makemigrations')
-		run('python manage.py migrate')	
-		run('python manage.py runserver')
+		util.cd(self.dpath_lookup['manage.py'])
+		util.run('python manage.py makemigrations')
+		util.run('python manage.py migrate')	
+		util.run('python manage.py runserver')
 
 class DjangoMonolith(Django):
 	def __init__(self,name,path,type):
@@ -211,6 +209,7 @@ class DjangoMonolith(Django):
 
 	def setup(self):
 		self.django_run_list(self.monolith_run_list)
+
 
 class DjangoApi(Django):
 	def __init__(self,name,path,type):

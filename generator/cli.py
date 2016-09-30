@@ -4,6 +4,7 @@ generator
 Usage:
   generator g <project> <name>
   generator g <project> <name> -p <path>
+  generator make:django route products:create
   
 Options:
   -d --directory                    Specify directory.
@@ -35,6 +36,7 @@ def main():
 
     # Here we'll try to dynamically match the command the user is trying to run
     # with a pre-defined command class we've already created.
+  
     for k, v in options.iteritems():
         if hasattr(commands, k) and v:
             module = getattr(commands, k)
