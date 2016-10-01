@@ -1,40 +1,49 @@
-"""Tests for our main generator CLI module."""
+"""Tests for our main generator cli_cmds module."""
 
 import unittest
 import sys 
 sys.path.append('../')
-from lib.cli import * 
 
-class TestHelp(unittest.TestCase):
+from lib import cli_cmds
+
+class CmdTests(unittest.TestCase):
 	def setUp(self):
-		self.output = {
-			'-p': False,
-			'<name>': None,
+		self.new_command = {
+			'-p': '~/Desktop',
+			'<cmd>': 'new',
+			'<controller>:<action>': None,
 			'<path>': None,
-			'<project>': None,
-			'g': False,
-			'make:django': True,
-			'products:create': True,
-			'route': True
+			'<project>:<name>': 'django:mysite',
+			'<sub-cmd>:<project>': None,
+			'<type>': None
 		}
 
-		self.test_output = {
-			'name' : "{0}.views as {0}_views".format(controller),
-	 		'url' : "url(r'^/{0}$', {0}_views.create,name='{1}'),".format(action,controller)
+		self.make_command = {
+			'-p': False,
+			'<cmd>': None,
+			'<controller>:<action>': 'products:new',
+			'<path>': None,
+			'<project>:<name>': None,
+			'<sub-cmd>:<project>': 'make:django',
+			'<type>': 'route'
 		}
 
-		def is_make_command(c):
-			if c[0] == 'make':
-				return c
 
-		def process_command(command):
-			return cli.lookup['make']['django']['routes']['create']('products','')
+	def is_make_command(self,c):
+		if c[0] == 'make':
+			return c
 
-		for k in output:
-			subcommand = k.split(':')
+	def test_new_command(self):
+		''' generator new django:mysite '''
+		cmds = cli_cmds.command_lookup(self.new_command)
+		self.assertTrue(cmds['cmd']['type']['new'])
+		
+	def test_subcommand(self):
+		cmds = cli_cmds.command_lookup(self.make_command)
+		self.assertTrue(cmds['cmd']['type']['make']['controller'] == 'products')
 
-			if is_make_command(subcommand):
-				process_command(subcommand)
+	def test_make_new_django_app(self):
+		self.assertTrue(cli_cmds.lookup()['new']('myproject','django')[0] == 'django')
 
 
 if __name__ == '__main__':

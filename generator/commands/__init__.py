@@ -1,2 +1,2 @@
-from .hello import *
-from .g import *
+from .new import *
+from .make import *

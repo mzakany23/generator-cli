@@ -19,7 +19,7 @@ class Generators(DjangoMonolith):
 		d = DjangoApi(self.name,self.path,self.type)
 		d.setup()
 
-	def generate_webpack_riot(self):
+	def generate_webpack_riot_app(self):
 		pass
 
 	def generate_django_api_webpack(self):

@@ -1,17 +1,22 @@
-"""The generate command."""
+"""The generate subcommand."""
 
 from json import dumps
 
 from .base import Base
 
-from lib.generators import Generators
+from lib import make_commands
 
-class Generate(Base):
-	"""Generate Projects"""
+class SubCommands(Base):
+	"""Sub Commands"""
 
 	def run(self):
-		print 'ok'
-		    	
+		cmd = make_commands.get_command(self.options)
+		make_commands.run(cmd)
+	
+		
+
+		
+	
     
     	
         

@@ -2,9 +2,9 @@
 generator
 
 Usage:
-  generator g <project> <name>
-  generator g <project> <name> -p <path>
-  generator make:django route products:create
+  generator <cmd> <project>:<name>
+  generator <cmd> <project>:<name> -p <path>
+  generator <sub-cmd>:<project> <type> <controller>:<action>
   
 Options:
   -d --directory                    Specify directory.
@@ -12,8 +12,9 @@ Options:
   --version                         Show version.
 
 Examples:
-  generator g project django
-  generator make:djangoapi products -d ~/Desktop
+  generator new django:mysite
+  generator new django:mysite -p /path/to/dir
+  generator make:django route products:create
 
 Help:
   <project> types:
@@ -29,18 +30,32 @@ from docopt import docopt
 
 from . import __version__ as VERSION
 
+from lib import cli_cmds
+
 def main():
     """Main CLI entrypoint."""
     import commands
+
     options = docopt(__doc__, version=VERSION)
 
-    # Here we'll try to dynamically match the command the user is trying to run
-    # with a pre-defined command class we've already created.
-  
-    for k, v in options.iteritems():
-        if hasattr(commands, k) and v:
-            module = getattr(commands, k)
-            commands = getmembers(module, isclass)
-            command = [command[1] for command in commands if command[0] != 'Base'][0]
-            command = command(options)
-            command.run()
+    cmds = cli_cmds.command_lookup(options)
+    
+    def get_commands(type):
+      module = getattr(commands, type)
+      members = getmembers(module, isclass)
+      
+      def inner(cls):
+        for member in members:
+          if member[0] == cls:
+            return member[1]
+      return inner
+      
+    if cmds['cmd']['type']['new']:
+      commands = get_commands('new')
+      command = commands('Generate')
+    
+    elif cmds['cmd']['type']['make']['route']:
+      commands = get_commands('make')
+      command = commands('SubCommands')
+    command(cmds).run()
+      
