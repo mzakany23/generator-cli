@@ -12,7 +12,6 @@ class SubCommands(Base):
 	def run(self):
 		cmd = make_commands.get_command(self.options)
 		make_commands.run(cmd)
-	
 		
 
 		

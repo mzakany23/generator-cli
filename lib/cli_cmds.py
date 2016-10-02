@@ -24,26 +24,32 @@ def command_lookup(cmd):
 		}
 	}
 
-	# generator new django:mysite
-	if cmd['<cmd>']:
-		cl['cmd']['type']['new'] = True
-		cl['path'] = cmd['<path>'] if cmd['-p'] else False
-		pn =  cmd['<project>:<name>'].split(':')
-		ptype = pn[0]
-		name = pn[1]
-		cl['site-name'] = name 
-		cl['project-type'] = ptype
+	try:
+		# generator new django:mysite
+		if cmd['<cmd>']:
+			cl['cmd']['type']['new'] = True
+			cl['path'] = cmd['<path>'] if cmd['-p'] else False
+			pn =  cmd['<project>:<name>'].split(':')
+			ptype = pn[0]
+			name = pn[1]
+			cl['site-name'] = name 
+			cl['project-type'] = ptype
+	except:
+		cl = False
 
-	# generator make:django route products:create
-	if cmd['<sub-cmd>:<project>']:
-		sc = cmd['<sub-cmd>:<project>'].split(':')
-		if sc[0] == 'make':
-			cl['project-type'] = sc[1]
-			cl['action-type'] = cmd['<type>']
-			ca = cmd['<controller>:<action>'].split(':')
-			cl['args'] = ca
-			cl['cmd']['type']['make']['route']
-		
+	try:
+		# generator make:django route products:create
+		if cmd['<sub-cmd>:<project>']:
+			sc = cmd['<sub-cmd>:<project>'].split(':')
+			if sc[0] == 'make':
+				cl['project-type'] = sc[1]
+				cl['action-type'] = cmd['<type>']
+				ca = cmd['<controller>:<action>'].split(':')
+				cl['args'] = ca
+				cl['cmd']['type']['make']['route']
+	except:
+		cl = False
+	
 	return cl
 
 

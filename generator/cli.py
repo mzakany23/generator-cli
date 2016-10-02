@@ -30,7 +30,7 @@ from docopt import docopt
 
 from . import __version__ as VERSION
 
-from lib import cli_cmds
+from lib import cli_cmds,util
 
 def main():
     """Main CLI entrypoint."""
@@ -39,7 +39,10 @@ def main():
     options = docopt(__doc__, version=VERSION)
 
     cmds = cli_cmds.command_lookup(options)
-    
+    if cmds is False:
+      m = 'wrong: try generator new django:test_site'
+      return util.color_print(util.bc.fail,m)
+
     def get_commands(type):
       module = getattr(commands, type)
       members = getmembers(module, isclass)
@@ -49,13 +52,14 @@ def main():
           if member[0] == cls:
             return member[1]
       return inner
-      
+    
+
     if cmds['cmd']['type']['new']:
       commands = get_commands('new')
       command = commands('Generate')
     
     elif cmds['cmd']['type']['make']['route']:
       commands = get_commands('make')
-      command = commands('SubCommands')
+      command = commands('SubCommands')   
     command(cmds).run()
       

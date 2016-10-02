@@ -83,6 +83,7 @@ class Django(object):
 
 	def make_static_files(self):
 		util.touch('.gitignore')
+		util.touch('%s/api/__init__.py' % self.name)
 		util.touch('%s/home/__init__.py' % self.name)
 		util.touch('%s/home/admin.py' % self.name)
 		util.touch('%s/api/__init__.py' % self.name)
@@ -188,7 +189,7 @@ class Django(object):
 		util.scrub_project_name(self.name)
 		util.cd(self.path)	
 		self.make_virtual_env()
-		self.install_requirements('development-test.txt')	
+		self.install_requirements('development.txt')	
 		util.cd(self.name)
 		self.create_project()
 		fn()

@@ -6,6 +6,19 @@ from functools import wraps
 from shutil import copyfile
 from lib import templates
 
+class bc:
+    header = '\033[95m'
+    blue = '\033[94m'
+    green = '\033[92m'
+    warning = '\033[93m'
+    fail = '\033[91m'
+    endc = '\033[0m'
+    bold = '\033[1m'
+    underline = '\033[4m'
+
+def color_print(color,msg):
+	print color + msg + bc.endc
+
 class virtualenv:
 	def __init__(self,bin_path):
 		self.fp = "%s/activate_this.py" % bin_path
@@ -42,6 +55,7 @@ def cpm(from_path,to_path):
 	copyfile(from_path,to_path)
 
 def scrub_project_name(name):
+	# this is obviously crap but I'm lazy
 	if '-' in name:
 		error('name must look like this: test_project; testProject; testproject ect.',type=Exception)
 
